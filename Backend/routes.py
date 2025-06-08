@@ -1,4 +1,3 @@
-# backend/routes.py
 from flask import jsonify, request
 
 # A dummy list of internships matching your TS interface
