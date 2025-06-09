@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Briefcase, Building2 } from 'lucide-react';
@@ -8,7 +8,7 @@ import Input from '../../components/common/Input';
 import Card from '../../components/common/Card';
 
 const Signup: React.FC = () => {
-  const { signup, isLoading } = useAuth();
+  const { signup, isLoading, user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -19,30 +19,40 @@ const Signup: React.FC = () => {
   });
   const [error, setError] = useState('');
 
+  // This useEffect hook is now reliable because AuthContext sets the user state immediately.
+  useEffect(() => {
+    if (user) {
+      const destination = user.role === 'student' ? '/student/dashboard' : '/company/dashboard';
+      navigate(destination, { replace: true });
+    }
+  }, [user, navigate]);
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
+    // --- Validation (unchanged) ---
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError("Password must be at least 6 characters long.");
       return;
     }
+    // --- End Validation ---
 
     try {
       await signup(formData);
-      navigate('/login', { 
-        state: { message: 'Account created successfully! Please log in.' } 
-      });
+      // NO navigate() call here. The useEffect hook will handle it.
     } catch (err: any) {
+      // This will now only catch critical Firebase errors, like email-already-in-use.
       console.error("Signup page caught an error:", err);
       if (err.code === 'auth/email-already-in-use') {
         setError('This email address is already registered.');
       } else {
-        setError('Failed to create an account. Please try again.');
+        setError(err.message || 'Failed to create an account. Please try again.');
       }
     }
   };
@@ -66,8 +76,8 @@ const Signup: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h2>
             <p className="text-gray-600 dark:text-gray-400">Join thousands on InternHub.</p>
         </div>
-        <Card>
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <Card padding="lg">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 px-4 py-3 rounded-md text-sm">
                 {error}
@@ -75,15 +85,37 @@ const Signup: React.FC = () => {
             )}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">I am a...</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button type="button" onClick={() => handleRoleChange('student')} className={`role-button ${formData.role === 'student' ? 'active' : ''}`}><User className="h-5 w-5 mr-2" /> Student</button>
-                <button type="button" onClick={() => handleRoleChange('company')} className={`role-button ${formData.role === 'company' ? 'active' : ''}`}><Building2 className="h-5 w-5 mr-2" /> Company</button>
+              <div className="grid grid-cols-2 gap-4">
+                <motion.button
+                  type="button"
+                  onClick={() => handleRoleChange('student')}
+                  className={`role-button ${formData.role === 'student' ? 'active' : ''}`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                >
+                  <User className="h-5 w-5 mr-3" />
+                  <span className="font-medium">Student</span>
+                </motion.button>
+                <motion.button
+                  type="button"
+                  onClick={() => handleRoleChange('company')}
+                  className={`role-button ${formData.role === 'company' ? 'active' : ''}`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                >
+                  <Building2 className="h-5 w-5 mr-3" />
+                  <span className="font-medium">Company</span>
+                </motion.button>
               </div>
             </div>
+            
             <Input name="name" label={formData.role === 'student' ? 'Full name' : 'Company name'} value={formData.name} onChange={handleInputChange} icon={formData.role === 'student' ? <User /> : <Building2 />} fullWidth required />
             <Input name="email" type="email" label="Email address" value={formData.email} onChange={handleInputChange} icon={<Mail />} fullWidth required />
             <Input name="password" type="password" label="Password" value={formData.password} onChange={handleInputChange} icon={<Lock />} fullWidth required />
             <Input name="confirmPassword" type="password" label="Confirm password" value={formData.confirmPassword} onChange={handleInputChange} icon={<Lock />} fullWidth required />
+            
             <Button type="submit" loading={isLoading} fullWidth size="lg" glow>Create Account</Button>
           </form>
           <div className="mt-6 text-center">
