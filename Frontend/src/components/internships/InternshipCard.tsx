@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Internship } from '../../types';
-import Card from '../common/Card';
 import Button from '../common/Button';
 
 interface InternshipCardProps {
@@ -215,16 +214,18 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           </motion.div>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
           <Link to={`/internships/${id}`}>
             <Button variant="outline" size="sm">
               <ExternalLink className="h-4 w-4 mr-2" />
               View Details
             </Button>
           </Link>
-          <Button size="sm" glow>
-            Apply Now
-          </Button>
+          <Link to={`/internships/${id}/apply`}>
+            <Button size="sm" glow>
+              Apply Now
+            </Button>
+          </Link>
         </div>
       </div>
     </motion.div>
