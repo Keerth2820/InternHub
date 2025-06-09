@@ -35,9 +35,15 @@ const HeroSection: React.FC = () => {
   ];
 
   return (
-    <div className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
+    // --- THIS IS THE MAIN CHANGE ---
+    <div className="relative bg-white dark:bg-gray-900 overflow-hidden">
+      {/* Background Elements for Dark Mode */}
+      <div className="absolute inset-0 hidden dark:block">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-subtle"></div>
+        <div className="absolute top-32 right-10 w-96 h-96 bg-secondary-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-subtle" style={{ animationDelay: '1s' }}></div>
+      </div>
+      {/* Background Elements for Light Mode */}
+      <div className="absolute inset-0 dark:hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="absolute top-10 left-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-subtle"></div>
         <div className="absolute top-32 right-10 w-96 h-96 bg-secondary-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-subtle" style={{ animationDelay: '1s' }}></div>
         <div className="absolute -bottom-32 left-32 w-80 h-80 bg-accent-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-subtle" style={{ animationDelay: '2s' }}></div>
@@ -50,46 +56,33 @@ const HeroSection: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            {/* Text color changes */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Launch Your Career with{' '}
-              <span className="text-primary-600">
+              <span className="text-primary-600 dark:text-primary-400">
                 Perfect Internships
               </span>
             </h1>
-            <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">
               Connect with top companies, gain real-world experience, and kickstart your professional journey. 
               Find internships that match your skills, interests, and career goals.
             </p>
           </motion.div>
 
-          {/* Search Form */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="max-w-4xl mx-auto mb-16"
           >
-            <form onSubmit={handleSearch} className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+            {/* The form now uses the Card component which is theme-aware */}
+            <form onSubmit={handleSearch} className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 lg:p-8">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div className="md:col-span-5">
-                  <Input
-                    type="text"
-                    placeholder="Job title, skills, or company"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    icon={<Search />}
-                    fullWidth
-                  />
+                  <Input type="text" placeholder="Job title, skills, or company" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} icon={<Search />} fullWidth />
                 </div>
                 <div className="md:col-span-4">
-                  <Input
-                    type="text"
-                    placeholder="Location or remote"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    icon={<MapPin />}
-                    fullWidth
-                  />
+                  <Input type="text" placeholder="Location or remote" value={location} onChange={(e) => setLocation(e.target.value)} icon={<MapPin />} fullWidth />
                 </div>
                 <div className="md:col-span-3">
                   <Button type="submit" size="lg" fullWidth>
@@ -100,9 +93,8 @@ const HeroSection: React.FC = () => {
               </div>
             </form>
 
-            {/* Popular Searches */}
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-500 mb-3">Popular searches:</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Popular searches:</p>
               <div className="flex flex-wrap justify-center gap-2">
                 {popularSearches.map((search) => (
                   <button
@@ -111,7 +103,7 @@ const HeroSection: React.FC = () => {
                       setSearchQuery(search);
                       navigate(`/search?q=${encodeURIComponent(search)}`);
                     }}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm transition-colors"
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full text-sm transition-colors"
                   >
                     {search}
                   </button>
@@ -120,7 +112,6 @@ const HeroSection: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Stats */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,11 +120,11 @@ const HeroSection: React.FC = () => {
           >
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 rounded-lg mb-4">
-                  <stat.icon className="h-6 w-6 text-primary-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-500/10 rounded-lg mb-4">
+                  <stat.icon className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
               </div>
             ))}
           </motion.div>
