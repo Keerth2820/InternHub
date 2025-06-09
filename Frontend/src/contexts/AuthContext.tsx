@@ -4,13 +4,14 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from '../firebase';
 
 type AppUser = {
   uid: string;
-  name: string | null;
-  email: string | null;
+  name: string;
+  email: string;
   role: 'student' | 'company';
 };
 
@@ -44,13 +45,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser && firebaseUser.displayName && firebaseUser.email) {
+        const [name, role] = firebaseUser.displayName.split('_');
         const appUser: AppUser = {
           uid: firebaseUser.uid,
-          name: firebaseUser.displayName || firebaseUser.email,
+          name: name,
           email: firebaseUser.email,
-          role: 'student', // TODO: Fetch role from your backend API
+          role: role as 'student' | 'company',
         };
         setUser(appUser);
       } else {
@@ -63,58 +65,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signup = async (data: SignupData) => {
-    setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const firebaseUser = userCredential.user;
-      const token = await firebaseUser.getIdToken();
+    // 1. Create user in Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+    const firebaseUser = userCredential.user;
 
-      const response = await fetch('http://127.0.0.1:5000/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          role: data.role,
-        }),
-      });
+    // 2. Update the Firebase profile. This is the source of truth for name/role.
+    await updateProfile(firebaseUser, {
+      displayName: `${data.name}_${data.role}`
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create user profile on server.');
-      }
-      
-      console.log("User successfully created on Firebase and in our backend DB.");
-    
-    } catch (error) {
-      console.error("Signup failed:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    // --- THIS IS THE CRUCIAL CHANGE ---
+    // 3. Manually create and set the user object immediately after signup.
+    // We will not wait for onAuthStateChanged. This forces an immediate state update.
+    const appUser: AppUser = {
+        uid: firebaseUser.uid,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+    };
+    setUser(appUser);
+
+    // 4. Send data to your backend in the background. We don't need to wait for it.
+    firebaseUser.getIdToken().then(token => {
+        fetch('http://127.0.0.1:5000/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ name: data.name, email: data.email, role: data.role }),
+        }).catch(err => console.error("Backend user creation failed:", err));
+    });
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await signOut(auth);
   };
 
   const value = { user, isLoading, login, signup, logout };
