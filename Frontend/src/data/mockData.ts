@@ -1,4 +1,4 @@
-import { Internship } from '../types';
+import { Internship, Company } from '../types';
 
 // --- EXPANDED DATA SETS ---
 const companyNames = [
@@ -55,7 +55,8 @@ export const mockInternships: Internship[] = Array.from({ length: 80 }, (_, i) =
     date.setDate(date.getDate() - i * 2);
 
     return {
-        id: `internship-${i + 1}`,
+        // --- THIS IS THE ONLY LINE THAT CHANGED ---
+        id: `${i + 1}`, // Generates "1", "2", "3", etc.
         title: `${domain} Intern`,
         company: {
             id: `company-${i % companyNames.length + 1}`,
