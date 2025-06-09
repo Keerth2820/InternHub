@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 @layer components {
-  .filter-tag {
-    @apply inline-flex items-center px-3 py-1 rounded-full font-medium;
+  .role-button {
+    @apply flex items-center justify-center p-4 border-2 rounded-lg transition-all duration-200 cursor-pointer border-gray-300 dark:border-gray-600 hover:border-primary-500 dark:hover:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
+  .role-button.active {
+    @apply border-primary-600 bg-primary-50 text-primary-700 dark:border-primary-500 dark:bg-primary-500/10 dark:text-primary-300 ring-2 ring-primary-500;
   }
 }
