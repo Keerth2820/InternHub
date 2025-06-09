@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {Calendar, Clock, DollarSign, MapPin, CheckCircle, Building2 } from 'lucide-react';
 import { Internship } from '../types';
@@ -73,7 +73,9 @@ const InternshipDetail: React.FC = () => {
               </span>
             </div>
             <div className="flex flex-col items-start md:items-end gap-2">
-                <Button size="lg" glow>Apply Now</Button>
+                <Link to={`/internships/${internship.id}/apply`}>
+                    <Button size="lg" glow>Apply Now</Button>
+                </Link>
                 <Button variant="outline">Save Internship</Button>
             </div>
           </div>
