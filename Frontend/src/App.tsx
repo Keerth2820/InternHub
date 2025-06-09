@@ -13,6 +13,7 @@ import Search from './pages/Search';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import InternshipDetail from './pages/InternshipDetail';
+import ApplyFlow from './pages/student/ApplyFlow';
 import Companies from './pages/Companies';
 
 // Student Pages
@@ -47,6 +48,7 @@ function App() {
                   <Route path="/student/dashboard" element={<StudentDashboard />} />
                   <Route path="/student/applied" element={<Applied />} />
                   <Route path="/student/saved" element={<Saved />} />
+                  <Route path="/internships/:id/apply" element={<ApplyFlow />} />
                 </Route>
 
                 {/* --- PROTECTED COMPANY ROUTES --- */}
