@@ -52,7 +52,7 @@ const InternshipDetail: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-12 px-4">
+    <div className="bg-gray-50 dark:bg-gray-800 min-h-screen py-12 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
