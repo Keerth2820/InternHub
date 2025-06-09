@@ -18,6 +18,7 @@ import Companies from './pages/Companies';
 
 // Student Pages
 import StudentDashboard from './pages/student/Dashboard';
+import StudentProfilePage from './pages/student/Profile';
 import Applied from './pages/student/Applied';
 import Saved from './pages/student/Saved';
 
@@ -48,6 +49,7 @@ function App() {
                   <Route path="/student/dashboard" element={<StudentDashboard />} />
                   <Route path="/student/applied" element={<Applied />} />
                   <Route path="/student/saved" element={<Saved />} />
+                  <Route path="/student/profile" element={<StudentProfilePage />} />
                   <Route path="/internships/:id/apply" element={<ApplyFlow />} />
                 </Route>
 
