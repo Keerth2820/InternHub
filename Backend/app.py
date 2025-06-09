@@ -1,35 +1,45 @@
 from flask import Flask
-from flask_cors import CORS # Make sure this is imported
-from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials
-from routes import register_routes
 
-# Initialize extensions
-db = SQLAlchemy()
+from extensions import db          # Import db from our new extensions file
+from routes import register_routes # This is now safe to import
 
-# Initialize Firebase Admin
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+def create_app():
+    """Application Factory Function"""
+    
+    # Initialize Firebase Admin (this check prevents errors on hot-reload)
+    if not firebase_admin._apps:
+        cred = credentials.Certificate("serviceAccountKey.json")
+        firebase_admin.initialize_app(cred)
 
-# Create the Flask app instance
-app = Flask(__name__)
+    # Create the Flask app instance
+    app = Flask(__name__)
 
-# --- THIS IS THE CRUCIAL PART THAT FIXES THE ERROR ---
-# This line tells the backend to accept requests from your frontend.
-# It will automatically handle the "preflight" OPTIONS requests.
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+    # Configure CORS to allow requests from your frontend
+    # Using "*" is simple and effective for local development
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///internhub.db"
-db.init_app(app)
+    # Configure the database URI
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///internhub.db"
+    
+    # Connect the db extension (from extensions.py) to our Flask app
+    db.init_app(app)
 
-# Register the API routes and pass the database instance
-register_routes(app, db)
+    # Register all the API routes from routes.py
+    register_routes(app, db)
+
+    return app
+
+# Create the app instance using the factory
+app = create_app()
 
 if __name__ == '__main__':
+    # The 'app_context' is needed for database operations
     with app.app_context():
-        # This will create the database tables if they don't exist
+        # This will create database tables if they don't exist
         db.create_all()
-    # Run the app
+    
+    # Run the development server
     app.run(debug=True)
