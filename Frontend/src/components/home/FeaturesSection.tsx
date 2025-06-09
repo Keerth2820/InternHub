@@ -56,7 +56,7 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.div
@@ -65,10 +65,10 @@ const FeaturesSection: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Why Choose InternHub?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               We provide everything you need to find and secure the perfect internship that launches your career.
             </p>
           </motion.div>
@@ -84,13 +84,13 @@ const FeaturesSection: React.FC = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="text-center group"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-2xl mb-6 group-hover:bg-primary-200 transition-colors">
-                <feature.icon className="h-8 w-8 text-primary-600" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-500/10 rounded-2xl mb-6 group-hover:bg-primary-200 dark:group-hover:bg-primary-500/20 transition-colors">
+                <feature.icon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>
