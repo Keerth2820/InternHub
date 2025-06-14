@@ -55,8 +55,7 @@ export const mockInternships: Internship[] = Array.from({ length: 80 }, (_, i) =
     date.setDate(date.getDate() - i * 2);
 
     return {
-        // --- THIS IS THE ONLY LINE THAT CHANGED ---
-        id: `${i + 1}`, // Generates "1", "2", "3", etc.
+        id: `${i + 1}`,
         title: `${domain} Intern`,
         company: {
             id: `company-${i % companyNames.length + 1}`,
@@ -92,3 +91,48 @@ export const mockCompanies = companyNames.map((name, i) => ({
   description: `A leading company in the ${domains[i % domains.length]} industry, focused on innovation and growth.`,
   openingsCount: mockInternships.filter(internship => internship.company.name === name).length,
 }));
+
+// Mock data for saved and applied internships (localStorage simulation)
+export const getSavedInternships = (): string[] => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('savedInternships');
+    return saved ? JSON.parse(saved) : [];
+  }
+  return [];
+};
+
+export const getAppliedInternships = (): string[] => {
+  if (typeof window !== 'undefined') {
+    const applied = localStorage.getItem('appliedInternships');
+    return applied ? JSON.parse(applied) : [];
+  }
+  return [];
+};
+
+export const saveInternship = (internshipId: string): void => {
+  if (typeof window !== 'undefined') {
+    const saved = getSavedInternships();
+    if (!saved.includes(internshipId)) {
+      saved.push(internshipId);
+      localStorage.setItem('savedInternships', JSON.stringify(saved));
+    }
+  }
+};
+
+export const unsaveInternship = (internshipId: string): void => {
+  if (typeof window !== 'undefined') {
+    const saved = getSavedInternships();
+    const filtered = saved.filter(id => id !== internshipId);
+    localStorage.setItem('savedInternships', JSON.stringify(filtered));
+  }
+};
+
+export const applyToInternship = (internshipId: string): void => {
+  if (typeof window !== 'undefined') {
+    const applied = getAppliedInternships();
+    if (!applied.includes(internshipId)) {
+      applied.push(internshipId);
+      localStorage.setItem('appliedInternships', JSON.stringify(applied));
+    }
+  }
+};
