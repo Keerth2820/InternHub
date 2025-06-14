@@ -11,7 +11,8 @@ import {
   Heart,
   FileText,
   Building2,
-  Plus
+  Plus,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import DarkModeToggle from './DarkModeToggle';
@@ -37,13 +38,15 @@ const Navbar: React.FC = () => {
   const studentMenuItems = [
     { name: 'Dashboard', href: '/student/dashboard', icon: User },
     { name: 'Applied', href: '/student/applied', icon: FileText }, 
-    { name: 'Saved', href: '/student/saved', icon: Heart },   
+    { name: 'Saved', href: '/student/saved', icon: Heart },
+    { name: 'Profile', href: '/student/profile', icon: Settings },
   ];
 
   const companyMenuItems = [
     { name: 'Dashboard', href: '/company/dashboard', icon: User },
     { name: 'Post Internship', href: '/company/post', icon: Plus },
     { name: 'My Listings', href: '/company/listings', icon: Briefcase },
+    { name: 'Profile', href: '/company/profile', icon: Settings },
   ];
 
   const profileMenuItems = user?.role === 'student' ? studentMenuItems : companyMenuItems;
@@ -146,7 +149,11 @@ const Navbar: React.FC = () => {
                           >
                             <Link
                               to={item.href}
-                              className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
+                                location.pathname === item.href
+                                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                              }`}
                               onClick={() => setIsProfileOpen(false)}
                             >
                               <item.icon className="h-4 w-4" />
