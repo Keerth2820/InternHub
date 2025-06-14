@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { mockInternships } from '../data/mockData';
+import { mockInternships, getSavedInternships, saveInternship, unsaveInternship } from '../data/mockData.ts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -29,7 +29,11 @@ const Search: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 1000);
+    const timer = setTimeout(() => {
+      // Load saved internships from localStorage
+      setSavedInternships(getSavedInternships());
+      setIsLoading(false);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -76,9 +80,14 @@ const Search: React.FC = () => {
   }, [filters]);
 
   const handleSaveInternship = (id: string) => {
-    setSavedInternships(prev =>
-      prev.includes(id) ? prev.filter(savedId => savedId !== id) : [...prev, id]
-    );
+    const isSaved = savedInternships.includes(id);
+    if (isSaved) {
+      unsaveInternship(id);
+      setSavedInternships(prev => prev.filter(savedId => savedId !== id));
+    } else {
+      saveInternship(id);
+      setSavedInternships(prev => [...prev, id]);
+    }
   };
 
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } };
@@ -123,10 +132,10 @@ const Search: React.FC = () => {
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2 text-sm">
-                    {filters.domain !== 'All Domains' && <span className="filter-tag bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200">{filters.domain}</span>}
-                    {filters.locationType !== 'any' && <span className="filter-tag bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 capitalize">{filters.locationType}</span>}
-                    {filters.locationQuery && <span className="filter-tag bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200">{filters.locationQuery}</span>}
-                    {filters.duration !== 'All Durations' && <span className="filter-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200">{filters.duration}</span>}
+                    {filters.domain !== 'All Domains' && <span className="filter-tag bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200 px-2 py-1 rounded-md">{filters.domain}</span>}
+                    {filters.locationType !== 'any' && <span className="filter-tag bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 px-2 py-1 rounded-md capitalize">{filters.locationType}</span>}
+                    {filters.locationQuery && <span className="filter-tag bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 px-2 py-1 rounded-md">{filters.locationQuery}</span>}
+                    {filters.duration !== 'All Durations' && <span className="filter-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200 px-2 py-1 rounded-md">{filters.duration}</span>}
                   </div>
                 </motion.div>
               )}
@@ -139,7 +148,11 @@ const Search: React.FC = () => {
                 <AnimatePresence>
                   {internships.map((internship) => (
                     <motion.div key={internship.id} variants={itemVariants} layout exit={{ opacity: 0, scale: 0.8 }}>
-                      <InternshipCard internship={internship} onSave={handleSaveInternship} isSaved={savedInternships.includes(internship.id)} />
+                      <InternshipCard 
+                        internship={internship} 
+                        onSave={handleSaveInternship} 
+                        isSaved={savedInternships.includes(internship.id)} 
+                      />
                     </motion.div>
                   ))}
                 </AnimatePresence>
