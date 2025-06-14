@@ -168,7 +168,7 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         return <SkeletonCard />;
     }
   };
-
+  
   return (
     <>
       {Array.from({ length: count }, (_, index) => (
