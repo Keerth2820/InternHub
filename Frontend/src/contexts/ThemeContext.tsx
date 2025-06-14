@@ -48,7 +48,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       localStorage.setItem('theme', 'light');
     }
   };
-
+  
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
       {children}
