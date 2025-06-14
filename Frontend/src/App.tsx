@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // Common Components
 import Navbar from './components/common/Navbar';
@@ -25,12 +26,16 @@ import Saved from './pages/student/Saved';
 // Company Pages
 import CompanyDashboard from './pages/company/Dashboard';
 import PostInternship from './pages/company/PostInternship';
+import EditInternship from './pages/company/EditInternship';
+import CompanyListings from './pages/company/Listings';
+import CompanyProfile from './pages/company/Profile';
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <Router>
+          <ScrollToTop />
           <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Navbar />
             <main>
@@ -44,7 +49,6 @@ function App() {
                 <Route path="/companies" element={<Companies />} />
 
                 {/* --- PROTECTED STUDENT ROUTES --- */}
-                {/* These routes will only be accessible to logged-in users with the 'student' role. */}
                 <Route element={<ProtectedRoute allowedRoles={['student']} />}>
                   <Route path="/student/dashboard" element={<StudentDashboard />} />
                   <Route path="/student/applied" element={<Applied />} />
@@ -54,14 +58,13 @@ function App() {
                 </Route>
 
                 {/* --- PROTECTED COMPANY ROUTES --- */}
-                {/* These routes will only be accessible to logged-in users with the 'company' role. */}
                 <Route element={<ProtectedRoute allowedRoles={['company']} />}>
                   <Route path="/company/dashboard" element={<CompanyDashboard />} />
                   <Route path="/company/post" element={<PostInternship />} />
+                  <Route path="/company/edit/:id" element={<EditInternship />} />
+                  <Route path="/company/listings" element={<CompanyListings />} />
+                  <Route path="/company/profile" element={<CompanyProfile />} />
                 </Route>
-                
-                {/* Optional: Add a 404 Not Found page for any other path */}
-                {/* <Route path="*" element={<NotFound />} /> */}
               </Routes>
             </main>
           </div>
