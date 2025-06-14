@@ -24,11 +24,11 @@ const Card: React.FC<CardProps> = ({
     md: 'p-6',
     lg: 'p-8',
   };
-
+  
   const Component = onClick ? motion.div : 'div';
   const motionProps = onClick ? {
     whileHover: { y: -2 },
-    whileTap: { scale: 0.98 },
+    whileTap: { scale: 0.98 }, 
   } : {};
 
   return (
